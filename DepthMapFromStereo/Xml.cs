@@ -39,7 +39,7 @@ namespace DepthMapFromStereo
         /// </summary>
         /// <param name="objects">Список классов</param>
         /// <param name="fileName">Имя файла</param>
-        public static void Write<T>(List<T> objects, string fileName)
+        public static void Export<T>(List<T> objects, string fileName)
         {
             XmlSerializer srzr = new XmlSerializer(typeof(List<T>));
             try
