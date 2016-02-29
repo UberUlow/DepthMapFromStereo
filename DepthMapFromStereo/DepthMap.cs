@@ -6,6 +6,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using System.Diagnostics;
+using System.IO;
 
 namespace DepthMapFromStereo
 {
@@ -22,6 +23,7 @@ namespace DepthMapFromStereo
         /// <param name="pairs">Список пар изображений с параметрами</param>
         public void Create(List<Pair> pairs)
         {
+            List<Results> results = new List<Results>();
             for (int k = 0; k < pairs.Count; k++)
             {
                 Image<Gray, byte> image1 = new Image<Gray, byte>(pairs[k].Image1.Path);
@@ -43,10 +45,29 @@ namespace DepthMapFromStereo
                         }
                     }
                 }
-                depthMapImg.Save($"Results/test{k + 1}.jpg");
-                Console.WriteLine($"Карта глубины построена записана в файл 'Results/test{k + 1}.jpg'. Это заняло {Math.Round(sw.Elapsed.TotalMilliseconds / 1000, 2)} секунд(ы).\n");
+
+                string outputDepthMapPath = $"Results/depthMap{k + 1}.txt";
+                using (TextWriter tw = new StreamWriter(outputDepthMapPath))
+                {
+                    for (int j = 0; j < depthMap.GetLength(1); j++)
+                    {
+                        for (int i = 0; i < depthMap.GetLength(0); i++)
+                        {
+                            tw.Write(Math.Round(depthMap[i, j], 2) + " ");
+                        }
+                        tw.WriteLine();
+                    }
+                }
+                Console.WriteLine($"Карта глубины записана в файл 'Results/depthMap{k + 1}.txt'.");
+                string outputDepthMapImagePath = $"Results/depthMap{k + 1}.jpg";
+                depthMapImg.Save(outputDepthMapImagePath);
+                Console.WriteLine($"Изображение карты глубины записано в файл 'Results/depthMap{k + 1}.jpg'");
+
+                results.Add(new Results(pairs[k].Properties, outputDepthMapPath, outputDepthMapImagePath));
                 sw.Stop();
+                Console.WriteLine($"Это заняло {Math.Round(sw.Elapsed.TotalMilliseconds / 1000, 2)} секунд(ы).\n");
             }
+            Xml.Export<Results>(results, "results.xml");
         }
 
         /// <summary>

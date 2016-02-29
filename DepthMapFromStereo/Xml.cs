@@ -6,12 +6,12 @@ using System.Xml.Serialization;
 namespace DepthMapFromStereo
 {
     /// <summary>
-    /// Класс чтения и записи любых классов в XML-файл
+    /// Класс чтения и записи любых классов в Xml-файл
     /// </summary>
-    public static class XML
+    public static class Xml
     {
         /// <summary>
-        /// Import XML
+        /// Import Xml
         /// </summary>
         /// <param name="fileName">Имя файла</param>
         /// <returns>Список классов</returns>
@@ -20,10 +20,11 @@ namespace DepthMapFromStereo
             try
             {
                 List<T> objects = new List<T>();
-                XmlSerializer srzr = new XmlSerializer(typeof(List<T>));
-                StreamReader reader = new StreamReader(fileName);
-                objects = (List<T>)srzr.Deserialize(reader);
-                reader.Close();
+                using (StreamReader reader = new StreamReader(fileName))
+                {
+                    XmlSerializer srzr = new XmlSerializer(typeof(List<T>));
+                    objects = (List<T>)srzr.Deserialize(reader);
+                }
                 Console.WriteLine("Данные импортированы из XML-файла.\n");
                 return objects;
             }
@@ -35,18 +36,19 @@ namespace DepthMapFromStereo
         }
 
         /// <summary>
-        /// Export XML
+        /// Export Xml
         /// </summary>
         /// <param name="objects">Список классов</param>
         /// <param name="fileName">Имя файла</param>
         public static void Export<T>(List<T> objects, string fileName)
         {
-            XmlSerializer srzr = new XmlSerializer(typeof(List<T>));
             try
             {
-                StreamWriter sw = new StreamWriter(fileName);
-                srzr.Serialize(sw, objects);
-                sw.Close();
+                using (StreamWriter sw = new StreamWriter(fileName))
+                {
+                    XmlSerializer srzr = new XmlSerializer(typeof(List<T>));
+                    srzr.Serialize(sw, objects);
+                }
                 Console.WriteLine("Данные экспортированы в XML-файл\n");
             }
             catch
