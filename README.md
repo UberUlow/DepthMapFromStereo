@@ -1,6 +1,9 @@
 # DepthMapFromStereo
 Create depth map from stereo pair.
 To use this program you need to have an xml file with the following format:
+
+
+
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfPair>
   <Pair>
